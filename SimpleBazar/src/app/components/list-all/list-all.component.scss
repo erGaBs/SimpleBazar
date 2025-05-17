@@ -1,0 +1,17 @@
+.preview{
+    width: 100px;
+    height: 100px;
+}
+
+.card-body{
+    display: flex;
+    gap: 16px;
+    border: 1px solid white;
+}
+
+.section{
+    width: 30%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}

@@ -1,0 +1,10 @@
+<div *ngFor="let item of categorie" class="card">
+    <div class="card-body">
+        <img class="preview" [src]="item.img">
+        <div class="section"> {{ item.name }}</div>
+        <div class="section">{{ item.status }}</div>
+        <div class="section">Actual Price: {{ item.actualPrice}}</div>
+        <button (click)="goTo(item.id)">Go to details</button>
+    </div>
+
+</div>
