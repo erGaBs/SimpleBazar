@@ -6,7 +6,9 @@
 .card-body{
     display: flex;
     gap: 16px;
-    border: 1px solid white;
+    background-color: #313030;
+    margin-bottom: 15px;
+    border-radius: 20px;
 }
 
 .section{
@@ -14,4 +16,11 @@
     display: flex;
     justify-content: center;
     align-items: center;
+}
+
+.btngoto{
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    margin: 10px;
 }

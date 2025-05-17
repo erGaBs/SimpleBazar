@@ -1,3 +1,14 @@
-<p>PAGINA DI DETTAGLIO DELL'ITEM CON ID: {{id}}</p>
-
-<a routerLink="">VAI ALLA HOME</a>
+<div class="title">PAGINA DI DETTAGLIO DELL'ITEM CON ID: {{id}}</div> <br>
+<div class="container">
+<div class="graph">
+    <p-chart type="line" [data]="data" [options]="options"></p-chart>
+</div>
+<div class="info">
+   <div> <b>{{ items[0].name }}</b></div> <br>
+   <div> Current Price:  {{ items[0].price }}</div> <br>
+   <div> Highest Price:  {{ items[0].name }}</div> <br>
+   <div> Lowest Price:  {{ items[0].name }}</div> <br>
+   <div> Final decision:  BUY NOW</div> <br>
+   
+</div>
+</div>

@@ -4,7 +4,7 @@
         <div class="section"> {{ item.name }}</div>
         <div class="section">{{ item.status }}</div>
         <div class="section">Actual Price: {{ item.actualPrice}}</div>
-        <button (click)="goTo(item.id)">Go to details</button>
+        <p-button class="btngoto" (click)="goTo(item.id)" label="Go to details" styleClass="p-button-warning"></p-button>
     </div>
 
 </div>
