@@ -4,14 +4,11 @@ const db = new sqlite3.Database('./simpleNB.db');
 // Creazione della tabella se non esiste
 db.serialize(() => {
   db.run(`
-    CREATE TABLE IF NOT EXISTS sales (
-      SaleID INTEGER PRIMARY KEY,
-      vnum TEXT,
-      Amount INTEGER,
+    CREATE TABLE IF NOT EXISTS items (
+      ID INTEGER PRIMARY KEY,
+      iconID TEXT,
+      timestamp TEXT,
       PricePerUnit INTEGER,
-      TimePeriod INTEGER,
-      TimePeriodType TEXT,
-      SellerName TEXT,
       Name TEXT
     )
   `);

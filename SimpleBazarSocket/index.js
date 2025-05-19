@@ -5,24 +5,11 @@ const socket = io('wss://noshydra.com', {
   transports: ['websocket']
 });
 
-const db = new sqlite3.Database('noshydras.db');
+const db = require('./db');
 
-// Creazione della tabella se non esiste
-db.run(`
-  CREATE TABLE IF NOT EXISTS sales (
-    SaleID INTEGER PRIMARY KEY,
-    vnum TEXT,
-    Amount INTEGER,
-    PricePerUnit INTEGER,
-    TimePeriod INTEGER,
-    TimePeriodType TEXT,
-    SellerName TEXT,
-    Name TEXT
-  )
-`);
 
-// Funzione per inviare la richiesta di ricerca
-function sendSearchRequest() {
+// Funzione per inviare la richiesta di ricerca delle piene
+function searchPiene() {
   socket.emit('search', {
     lang: 'it',
     server: 'dragonveil',
@@ -48,29 +35,36 @@ socket.on('connect', () => {
 // Funzione per pianificare la prossima richiesta
 function scheduleNextRequest() {
   setTimeout(() => {
-    sendSearchRequest();
-  }, 10000); // 10 secondi
+    searchPiene();
+  }, 10000); // 1 ora
+}
+
+//dateformatter
+function toLocalISOString(date) {
+  const pad = (n) => n.toString().padStart(2, '0');
+
+  return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}T${pad(date.getHours())}:${pad(date.getMinutes())}:${pad(date.getSeconds())}`;
 }
 
 // Gestione dei risultati della ricerca
 socket.on('results', (data) => {
   if (data && Array.isArray(data.results)) {
     const insertStmt = db.prepare(`
-      INSERT OR REPLACE INTO sales (
-        SaleID, vnum, Amount, PricePerUnit, TimePeriod, TimePeriodType, SellerName, Name
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+      INSERT OR REPLACE INTO items (
+        ID, iconID, PricePerUnit, timestamp, Name
+      ) VALUES (?, ?, ?, ?, ?)
     `);
 
     // Inserisci solo i primi 5 risultati
-    data.results.slice(0, 5).forEach(item => {
+    let date = new Date();
+    let dateFormatted = toLocalISOString(date);
+
+    data.results.slice(0, 2).forEach(item => {
       insertStmt.run([
         item.SaleID,
         item.vnum,
-        item.Amount,
         item.PricePerUnit,
-        item.TimePeriod,
-        item.TimePeriodType,
-        item.SellerName,
+        dateFormatted,
         item.Name
       ]);
     });
