@@ -1,6 +1,7 @@
 import { Component, Input } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Item } from 'src/app/models/item';
+import { ItemsService } from 'src/app/service/items.service';
 
 @Component({
   selector: 'app-item',
@@ -26,7 +27,7 @@ export class ItemComponent {
     { id: 1, name: "Piuma d'angelo", timestamp: "2025-05-08T12:00:00Z", price: "3,697" }
   ]
 
-  constructor(private route: ActivatedRoute) {}
+  constructor(private route: ActivatedRoute, private itemservice: ItemsService) {}
 
   ngOnInit(): void {
     this.id = this.route.snapshot.paramMap.get('id');
@@ -36,6 +37,11 @@ export class ItemComponent {
 
   getItemData(id: string | null) {
     //riempo l'array con i dati dell'oggetto recuperati dall'API
+    if (id) {
+      this.itemservice.getItemById(id).subscribe((data: Item[]) => {
+        console.log(data);
+      });
+    }
   }
 
   createGraph(){
