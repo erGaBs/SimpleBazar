@@ -29,6 +29,22 @@ function searchPiene() {
   });
 }
 
+function searchPiume() {
+  socket.emit('search', {
+    lang: 'it',
+    server: 'dragonveil',
+    inputField: `Piuma d'angelo`,
+    categoryDropdownIndex: 0,
+    subCategoryDropdownIndex: -1,
+    levelDropdownIndex: -1,
+    rarityLevelDropdownIndex: -1,
+    upgradeLevelDropdownIndex: -1,
+    sortByDropdownIndex: 0,
+    page: 1,
+    shellFilters: []
+  });
+}
+
 // Gestione della connessione
 socket.on('connect', () => {
   console.log('✅ Connesso al WebSocket');
@@ -39,8 +55,10 @@ socket.on('connect', () => {
 // Funzione per pianificare la prossima richiesta
 function scheduleNextRequest() {
   setTimeout(() => {
+    searchPiume();
     searchPiene();
   }, 10000); // 1 ora
+  
 }
 
 //dateformatter
@@ -97,6 +115,27 @@ app.get('/item/:id', (req, res) => {
     } else {
       res.status(404).json({ error: 'Item non trovato' });
     }
+  });
+});
+
+app.get('/latest-items', (req, res) => {
+  const query = `
+    WITH ranked_items AS (
+      SELECT *,
+             ROW_NUMBER() OVER (PARTITION BY iconID ORDER BY timestamp DESC) AS rn
+      FROM items
+    )
+    SELECT ID, iconID, PricePerUnit, timestamp, Name
+    FROM ranked_items
+    WHERE rn = 1;
+  `;
+
+  db.all(query, [], (err, rows) => {
+    if (err) {
+      console.error('Errore nella query:', err);
+      return res.status(500).json({ error: 'Errore nel recupero dei dati' });
+    }
+    res.json(rows);
   });
 });
 
