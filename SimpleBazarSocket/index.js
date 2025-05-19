@@ -233,16 +233,56 @@ async function getLatestItemsAndSend() {
   });
 }
 
-const DISCORD_WEBHOOK_URL = 'https://discord.com/api/webhooks/1374093864427716659/ymoPpWVQb8eby1Pt5s_c6ziV9eqndKYWCj3ZVM3Mqj3BTdzK2cgf4Wm2ooshMebl-kZ3'; // Sostituisci con il tuo URL webhook
-const MARGINE_DESIDERATO = 0.10; // 10%
-
 let previousMessageId = null;
 
-function calcolaPrezzoAcquisto() {
+  setInterval(() => {
+    getLatestItemsAndSend();
+    analyzeAndSendActions();
+  }, 10000); // 1 ora
+
+
+//ALGORITMI DI CALCOLO DEL PREZZO
+
+const DISCORD_WEBHOOK_URL2 = 'https://discord.com/api/webhooks/1374101631762698440/q6O7rF2STZTIxaC76nz2S_KY-QafllvuiPksLBSgwkjHMgc9S0lm3CwLCsKV8XVrxz-J';
+const MARGINE_DESIDERATO2 = 0.05; // 5%
+
+function toLocalISOString(date) {
+  const pad = (n) => n.toString().padStart(2, '0');
+  return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}T${pad(date.getHours())}:${pad(date.getMinutes())}:${pad(date.getSeconds())}`;
+}
+
+function getAction(prices, currentPrice) {
+  if (prices.length < 2) return 'DATI INSUFFICIENTI';
+
+  const recentPrices = prices.map(p => Number(p.PricePerUnit));
+  const avg = recentPrices.reduce((sum, p) => sum + p, 0) / recentPrices.length;
+
+  const maxPrice = Math.max(...recentPrices);
+  const minPrice = Math.min(...recentPrices);
+
+  const thresholdBuy = avg * (1 - MARGINE_DESIDERATO2);
+  const thresholdSell = avg * (1 + MARGINE_DESIDERATO2);
+
+  if (currentPrice <= thresholdBuy) {
+    const bestSellPrice = maxPrice;
+    const bestSellObj = prices.find(p => Number(p.PricePerUnit) === bestSellPrice);
+    const bestSellTime = bestSellObj ? bestSellObj.timestamp : 'momento sconosciuto';
+
+    return `ACQUISTA ora. Rivendi quando il prezzo arriva a ${bestSellPrice} (es. ${bestSellTime})`;
+  }
+
+  if (currentPrice >= thresholdSell) {
+    return `VENDI ORA. Prezzo superiore alla media (${avg.toFixed(2)})`;
+  }
+
+  return 'ASPETTA. Prezzo nella media, nessuna opportunità chiara.';
+}
+
+function analyzeAndSendActions() {
   const query = `
-    SELECT iconID, Name, AVG(PricePerUnit) AS prezzo_medio
+    SELECT iconID, Name, PricePerUnit, timestamp
     FROM items
-    GROUP BY iconID
+    ORDER BY iconID, timestamp DESC
   `;
 
   db.all(query, [], async (err, rows) => {
@@ -256,20 +296,32 @@ function calcolaPrezzoAcquisto() {
       return;
     }
 
-    const ora = new Date().toLocaleString('it-IT');
-    let messaggio = `📈 **Analisi Prezzi - ${ora}**\n\n`;
-
-    rows.forEach(item => {
-      const prezzoAcquistoMax = Math.floor(item.prezzo_medio * (1 - MARGINE_DESIDERATO));
-      messaggio += `🧾 **${item.Name}** (iconID: ${item.iconID})\n`;
-      messaggio += `💰 Prezzo Medio Vendita: €${item.prezzo_medio.toFixed(2)}\n`;
-      messaggio += `🛒 Prezzo Massimo Acquisto (per margine del ${MARGINE_DESIDERATO * 100}%): €${prezzoAcquistoMax}\n\n`;
+    // Raggruppa i dati per iconID
+    const groupedData = {};
+    rows.forEach(row => {
+      if (!groupedData[row.iconID]) {
+        groupedData[row.iconID] = [];
+      }
+      groupedData[row.iconID].push(row);
     });
+
+    const ora = new Date().toLocaleString('it-IT');
+    let messaggio = `📊 **Analisi Azioni Consigliate - ${ora}**\n\n`;
+
+    for (const iconID in groupedData) {
+      const items = groupedData[iconID];
+      const currentItem = items[0]; // Ultimo prezzo
+      const action = getAction(items, currentItem.PricePerUnit);
+
+      messaggio += `🧾 **${currentItem.Name}** (iconID: ${iconID})\n`;
+      messaggio += `💰 Prezzo Attuale: €${currentItem.PricePerUnit}\n`;
+      messaggio += `🔍 Azione: ${action}\n\n`;
+    }
 
     try {
       // Se esiste un messaggio precedente, cancellalo
       if (previousMessageId) {
-        const deleteUrl = `${DISCORD_WEBHOOK_URL}/messages/${previousMessageId}`;
+        const deleteUrl = `${DISCORD_WEBHOOK_URL2}/messages/${previousMessageId}`;
         const deleteResponse = await fetch(deleteUrl, { method: 'DELETE' });
 
         if (!deleteResponse.ok) {
@@ -280,7 +332,7 @@ function calcolaPrezzoAcquisto() {
       }
 
       // Invia il nuovo messaggio e ottieni l'ID
-      const response = await fetch(`${DISCORD_WEBHOOK_URL}?wait=true`, {
+      const response = await fetch(`${DISCORD_WEBHOOK_URL2}?wait=true`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ content: messaggio })
@@ -298,39 +350,4 @@ function calcolaPrezzoAcquisto() {
       console.error('Errore nell\'invio a Discord:', error);
     }
   });
-}
-
-  setInterval(() => {
-    getLatestItemsAndSend();
-    calcolaPrezzoAcquisto();
-  }, 10000); // 1 ora
-
-
-//ALGORITMI DI CALCOLO DEL PREZZO
-
-function getAction(prices, currentPrice) {
-  if (prices.length < 2) return 'DATI INSUFFICIENTI';
-
-  const recentPrices = prices.map(p => Number(p.PricePerUnit));
-  const avg = recentPrices.reduce((sum, p) => sum + p, 0) / recentPrices.length;
-
-  const maxPrice = Math.max(...recentPrices);
-  const minPrice = Math.min(...recentPrices);
-
-  const thresholdBuy = avg * 0.95;
-  const thresholdSell = avg * 1.05;
-
-  if (currentPrice <= thresholdBuy) {
-    const bestSellPrice = maxPrice;
-    const bestSellObj = prices.find(p => Number(p.PricePerUnit) === bestSellPrice);
-    const bestSellTime = bestSellObj ? bestSellObj.timestamp : 'momento sconosciuto';
-
-    return console.log(`ACQUISTA ora. Rivendi quando il prezzo arriva a ${bestSellPrice} (es. ${bestSellTime})`);
-  }
-
-  if (currentPrice >= thresholdSell) {
-    return console.log(`VENDI ORA. Prezzo superiore alla media (${avg.toFixed(2)})`);
-  }
-
-  return console.log('ASPETTA. Prezzo nella media, nessuna opportunità chiara.');
 }
