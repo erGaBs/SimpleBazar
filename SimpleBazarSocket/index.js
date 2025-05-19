@@ -304,3 +304,33 @@ function calcolaPrezzoAcquisto() {
     getLatestItemsAndSend();
     calcolaPrezzoAcquisto();
   }, 10000); // 1 ora
+
+
+//ALGORITMI DI CALCOLO DEL PREZZO
+
+function getAction(prices, currentPrice) {
+  if (prices.length < 2) return 'DATI INSUFFICIENTI';
+
+  const recentPrices = prices.map(p => Number(p.PricePerUnit));
+  const avg = recentPrices.reduce((sum, p) => sum + p, 0) / recentPrices.length;
+
+  const maxPrice = Math.max(...recentPrices);
+  const minPrice = Math.min(...recentPrices);
+
+  const thresholdBuy = avg * 0.95;
+  const thresholdSell = avg * 1.05;
+
+  if (currentPrice <= thresholdBuy) {
+    const bestSellPrice = maxPrice;
+    const bestSellObj = prices.find(p => Number(p.PricePerUnit) === bestSellPrice);
+    const bestSellTime = bestSellObj ? bestSellObj.timestamp : 'momento sconosciuto';
+
+    return console.log(`ACQUISTA ora. Rivendi quando il prezzo arriva a ${bestSellPrice} (es. ${bestSellTime})`);
+  }
+
+  if (currentPrice >= thresholdSell) {
+    return console.log(`VENDI ORA. Prezzo superiore alla media (${avg.toFixed(2)})`);
+  }
+
+  return console.log('ASPETTA. Prezzo nella media, nessuna opportunità chiara.');
+}

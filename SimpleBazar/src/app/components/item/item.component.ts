@@ -144,34 +144,10 @@ export class ItemComponent {
   }
 
   calcolaEsito(){
-    console.log(this.getAction(this.items, Number(this.items[this.items.length-1].PricePerUnit)))
   }
 
   //calcolo con media mobile
 
-   getAction(prices: Item[], currentPrice: number): string {
-  if (prices.length < 2) return 'DATI INSUFFICIENTI';
-
-  const recentPrices = prices.map(p => Number(p.PricePerUnit));
-  const avg = recentPrices.reduce((sum, p) => sum + p, 0) / recentPrices.length;
-
-  const maxPrice = Math.max(...recentPrices);
-  const minPrice = Math.min(...recentPrices);
-
-  const thresholdBuy = avg * 0.95;
-  const thresholdSell = avg * 1.05;
-
-  if (currentPrice <= thresholdBuy) {
-    const bestSellPrice = maxPrice;
-    const bestSellTime = prices.find(p => Number(p.PricePerUnit) === bestSellPrice)?.timestamp;
-    return `ACQUISTA ora. Rivendi quando il prezzo arriva a ${bestSellPrice} (es. ${bestSellTime})`;
-  }
-
-  if (currentPrice >= thresholdSell) {
-    return `VENDI ORA. Prezzo superiore alla media (${avg.toFixed(2)})`;
-  }
-
-  return 'ASPETTA. Prezzo nella media, nessuna opportunità chiara.';
-}
+   
 
 }
