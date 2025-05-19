@@ -8,12 +8,16 @@ import { Observable } from 'rxjs';
 
 export class ItemsService {
 
- private apiUrl = 'http://localhost:3000/item'; // Cambia con il tuo endpoint
+ private apiUrl = 'http://localhost:3000/'; // Cambia con il tuo endpoint
 
   constructor(private http: HttpClient) {}
 
   getItemById(id: string | string): Observable<any> {
-  return this.http.get<any>(`${this.apiUrl}/${id}`);
+  return this.http.get<any>(`${this.apiUrl}item/${id}`);
+}
+
+  getCategories(): Observable<any> {
+  return this.http.get<any>(`${this.apiUrl}latest-items`);
 }
 
 }

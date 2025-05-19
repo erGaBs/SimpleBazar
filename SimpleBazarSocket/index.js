@@ -45,6 +45,22 @@ function searchPiume() {
   });
 }
 
+function searchProfumi() {
+  socket.emit('search', {
+    lang: 'it',
+    server: 'dragonveil',
+    inputField: `Profumo`,
+    categoryDropdownIndex: 0,
+    subCategoryDropdownIndex: -1,
+    levelDropdownIndex: -1,
+    rarityLevelDropdownIndex: -1,
+    upgradeLevelDropdownIndex: -1,
+    sortByDropdownIndex: 0,
+    page: 1,
+    shellFilters: []
+  });
+}
+
 // Gestione della connessione
 socket.on('connect', () => {
   console.log('✅ Connesso al WebSocket');
@@ -57,7 +73,8 @@ function scheduleNextRequest() {
   setTimeout(() => {
     searchPiume();
     searchPiene();
-  }, 10000); // 1 ora
+    searchProfumi();
+  }, 3600000); // 1 ora
   
 }
 

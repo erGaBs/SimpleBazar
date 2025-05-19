@@ -1,7 +1,7 @@
 export interface Category {
-    id: number;
-    img: string;
-    name: string;
-    actualPrice: string;
+    ID: number;
+    iconID: number;
+    Name: string;
+    PricePerUnit: string;
     status?: string;
 }

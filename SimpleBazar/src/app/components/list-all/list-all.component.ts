@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 import { Category } from 'src/app/models/category';
+import { ItemsService } from 'src/app/service/items.service';
 
 @Component({
   selector: 'app-list-all',
@@ -9,12 +10,18 @@ import { Category } from 'src/app/models/category';
 })
 export class ListAllComponent {
 
-  constructor(private router: Router) {}
+  constructor(private router: Router, private itemservice: ItemsService) {}
 
   categorie: Category[] = [
-    { id: 2282, img: "https://www.noshydra.com/static/images/items_icons/2282.png", name: "Piuma d'angelo", actualPrice: "4,397", status: "BUY NOW" },
-    { id: 1030, img: "https://www.noshydra.com/static/images/items_icons/1030.png", name: 'Cristallo di luna piena', actualPrice: "21,599", status: "SELL NOW" }
   ]
+
+  ngOnInit(): void {
+    this.itemservice.getCategories().subscribe((data: Category[]) => {
+      this.categorie = data;
+      console.log(this.categorie);
+    }
+    );
+  }
 
   goTo(id : any){
     this.router.navigate(['/item', id]);
