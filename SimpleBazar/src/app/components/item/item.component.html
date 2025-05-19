@@ -4,10 +4,10 @@
     <p-chart type="line" [data]="data" [options]="options"></p-chart>
 </div>
 <div class="info">
-   <div> <b>{{ items[0].name }}</b></div> <br>
-   <div> Current Price:  {{ items[0].price }}</div> <br>
-   <div> Highest Price:  {{ items[0].name }}</div> <br>
-   <div> Lowest Price:  {{ items[0].name }}</div> <br>
+   <div> <b>{{ items[0].Name }}</b></div> <br>
+   <div> Current Price:  {{ items[items.length-1].PricePerUnit }}</div> <br>
+   <div> Highest Price:  {{ items[0].Name }}</div> <br>
+   <div> Lowest Price:  {{ items[0].Name }}</div> <br>
    <div> Final decision:  BUY NOW</div> <br>
    
 </div>

@@ -10,22 +10,17 @@ import { ItemsService } from 'src/app/service/items.service';
 })
 export class ItemComponent {
 
+    highestPrice: string = '';
+    lowestPrice: string = '';
+    
+
   id: string | null = null;
 
   data: any;
 
   options: any;
 
-  items : Item[] = [
-    { id: 1, name: "Piuma d'angelo", timestamp: "2025-05-01T12:00:00Z", price: "4,397" },
-    { id: 1, name: "Piuma d'angelo", timestamp: "2025-05-02T12:00:00Z", price: "4,384" },
-    { id: 1, name: "Piuma d'angelo", timestamp: "2025-05-03T12:00:00Z", price: "4,200" },
-    { id: 1, name: "Piuma d'angelo", timestamp: "2025-05-04T12:00:00Z", price: "4,100" },
-    { id: 1, name: "Piuma d'angelo", timestamp: "2025-05-05T12:00:00Z", price: "3,77" },
-    { id: 1, name: "Piuma d'angelo", timestamp: "2025-05-06T12:00:00Z", price: "3,997" },
-    { id: 1, name: "Piuma d'angelo", timestamp: "2025-05-07T12:00:00Z", price: "3,497" },
-    { id: 1, name: "Piuma d'angelo", timestamp: "2025-05-08T12:00:00Z", price: "3,697" }
-  ]
+  items : Item[] = []
 
   constructor(private route: ActivatedRoute, private itemservice: ItemsService) {}
 
@@ -39,7 +34,8 @@ export class ItemComponent {
     //riempo l'array con i dati dell'oggetto recuperati dall'API
     if (id) {
       this.itemservice.getItemById(id).subscribe((data: Item[]) => {
-        console.log(data);
+        this.items = data;
+        console.log(this.items);
       });
     }
   }
@@ -64,6 +60,7 @@ export class ItemComponent {
 
     
   }
+
 
 
   setGraphOptions(){
@@ -118,4 +115,10 @@ export class ItemComponent {
         }
       };
   }
+
+
+  calculateHighestLowestPrice(){
+    
+  }
+
 }
