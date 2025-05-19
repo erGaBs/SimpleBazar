@@ -1,11 +1,15 @@
+const express = require('express');
 const io = require('socket.io-client');
 const sqlite3 = require('sqlite3').verbose();
+const app = express();
+const port = 3000;
 
 const socket = io('wss://noshydra.com', {
   transports: ['websocket']
 });
 
 const db = require('./db');
+
 
 
 // Funzione per inviare la richiesta di ricerca delle piene
@@ -77,4 +81,25 @@ socket.on('results', (data) => {
 
   // Pianifica la prossima richiesta solo dopo aver elaborato i dati correnti
   scheduleNextRequest();
+});
+
+
+app.get('/item/:id', (req, res) => {
+  const id = req.params.id;
+  const query = 'SELECT * FROM items WHERE iconID = ?';
+
+  db.all(query, [id], (err, row) => {
+    if (err) {
+      console.error('Errore nella query:', err.message);
+      res.status(500).json({ error: 'Errore interno del server' });
+    } else if (row) {
+      res.json(row);
+    } else {
+      res.status(404).json({ error: 'Item non trovato' });
+    }
+  });
+});
+
+app.listen(port, () => {
+  console.log(`Server in ascolto su http://localhost:${port}`);
 });
