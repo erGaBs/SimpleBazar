@@ -6,9 +6,9 @@
 <div class="info">
    <div> <b>{{ items[0].Name }}</b></div> <br>
    <div> Current Price:  {{ items[items.length-1].PricePerUnit }}</div> <br>
-   <div> Highest Price:  {{ items[0].Name }}</div> <br>
-   <div> Lowest Price:  {{ items[0].Name }}</div> <br>
+   <div> Highest Price:  {{ highestPrice }}</div> <br>
+   <div> Lowest Price:  {{ lowestPrice }}</div> <br>
    <div> Final decision:  BUY NOW</div> <br>
-   
+   <button (click)="calcolaEsito()"> CALCULATE</button>
 </div>
 </div>

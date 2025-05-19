@@ -27,7 +27,7 @@ export class ItemComponent {
   ngOnInit(): void {
     this.id = this.route.snapshot.paramMap.get('id');
     this.getItemData(this.id);
-    this.createGraph()
+    
   }
 
   getItemData(id: string | null) {
@@ -36,6 +36,8 @@ export class ItemComponent {
       this.itemservice.getItemById(id).subscribe((data: Item[]) => {
         this.items = data;
         console.log(this.items);
+        this.createGraph()
+        this.calculateHighestLowestPrice()
       });
     }
   }
@@ -43,22 +45,35 @@ export class ItemComponent {
   createGraph(){
     this.setGraphOptions()
         const documentStyle = getComputedStyle(document.documentElement);
-
+        let labels = this.items.map((item) => this.formatDateToggmm(item.timestamp));
+        let data = this.items.map((item) => Number(item.PricePerUnit));
         this.data = {
-          labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
+          labels: labels,
           datasets: [
               {
-                  label: 'Piume d\'angelo',
+                  label: this.items[0].Name,
                   fill: false,
                   borderColor: documentStyle.getPropertyValue('--blue-500'),
                   yAxisID: 'y',
                   tension: 0.4,
-                  data: [65, 59, 80, 81, 56, 55, 10]
+                  data: data
               }
           ]
       };
 
-    
+      console.log(this.data)
+  }
+
+
+  formatDateToggmm(dateStr: string) : string {
+    const date = new Date(dateStr);
+
+// Ottieni giorno e mese con padding
+    const day = date.getDate().toString().padStart(2, '0');
+    const month = (date.getMonth() + 1).toString().padStart(2, '0');
+
+    const formatted = `${day}/${month}`;
+    return formatted;
   }
 
 
@@ -118,7 +133,45 @@ export class ItemComponent {
 
 
   calculateHighestLowestPrice(){
-    
+    this.lowestPrice = this.items.reduce((min, curr) => 
+    curr.PricePerUnit < min.PricePerUnit ? curr : min
+    ).PricePerUnit.toString();
+
+    this.highestPrice = this.items.reduce((max, curr) => 
+    curr.PricePerUnit > max.PricePerUnit ? curr : max
+    ).PricePerUnit.toString();
+
   }
+
+  calcolaEsito(){
+    console.log(this.getAction(this.items, Number(this.items[this.items.length-1].PricePerUnit)))
+  }
+
+  //calcolo con media mobile
+
+   getAction(prices: Item[], currentPrice: number): string {
+  if (prices.length < 2) return 'DATI INSUFFICIENTI';
+
+  const recentPrices = prices.map(p => Number(p.PricePerUnit));
+  const avg = recentPrices.reduce((sum, p) => sum + p, 0) / recentPrices.length;
+
+  const maxPrice = Math.max(...recentPrices);
+  const minPrice = Math.min(...recentPrices);
+
+  const thresholdBuy = avg * 0.95;
+  const thresholdSell = avg * 1.05;
+
+  if (currentPrice <= thresholdBuy) {
+    const bestSellPrice = maxPrice;
+    const bestSellTime = prices.find(p => Number(p.PricePerUnit) === bestSellPrice)?.timestamp;
+    return `ACQUISTA ora. Rivendi quando il prezzo arriva a ${bestSellPrice} (es. ${bestSellTime})`;
+  }
+
+  if (currentPrice >= thresholdSell) {
+    return `VENDI ORA. Prezzo superiore alla media (${avg.toFixed(2)})`;
+  }
+
+  return 'ASPETTA. Prezzo nella media, nessuna opportunità chiara.';
+}
 
 }
