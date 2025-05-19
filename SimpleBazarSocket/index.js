@@ -54,7 +54,7 @@ function toLocalISOString(date) {
 socket.on('results', (data) => {
   if (data && Array.isArray(data.results)) {
     const insertStmt = db.prepare(`
-      INSERT OR REPLACE INTO items (
+      INSERT OR IGNORE INTO items (
         ID, iconID, PricePerUnit, timestamp, Name
       ) VALUES (?, ?, ?, ?, ?)
     `);

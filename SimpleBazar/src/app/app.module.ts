@@ -93,6 +93,10 @@ import { TreeSelectModule } from 'primeng/treeselect';
 import { TreeTableModule } from 'primeng/treetable';
 import { VirtualScrollerModule } from 'primeng/virtualscroller';
 
+//moduli 
+
+import { HttpClientModule } from '@angular/common/http';
+
 
 @NgModule({
   declarations: [
@@ -111,6 +115,7 @@ import { VirtualScrollerModule } from 'primeng/virtualscroller';
     ButtonModule,
     TabViewModule,
     DataViewModule,
+    HttpClientModule,
     // PrimeNG Modules
     AccordionModule,
     AutoCompleteModule,
