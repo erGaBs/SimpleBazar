@@ -14,13 +14,20 @@ export class ItemComponent {
     lowestPrice: string = '';
     
 
+  esito: string = '';
+
   id: string | null = null;
 
   data: any;
 
   options: any;
 
-  items : Item[] = []
+  items : Item[] = [{
+    iconID: 0,
+    Name: '',
+    timestamp: '',
+    PricePerUnit: '',
+  }]
 
   constructor(private route: ActivatedRoute, private itemservice: ItemsService) {}
 
@@ -35,9 +42,9 @@ export class ItemComponent {
     if (id) {
       this.itemservice.getItemById(id).subscribe((data: Item[]) => {
         this.items = data;
-        console.log(this.items);
         this.createGraph()
         this.calculateHighestLowestPrice()
+        this.calcolaEsito()
       });
     }
   }
@@ -61,7 +68,6 @@ export class ItemComponent {
           ]
       };
 
-      console.log(this.data)
   }
 
 
@@ -144,7 +150,35 @@ export class ItemComponent {
   }
 
   calcolaEsito(){
+    this.esito = this.getAction(this.items, Number(this.items[this.items.length - 1].PricePerUnit))
+
   }
+
+
+  getAction(prices: Item[], currentPrice: number): string {
+  if (prices.length < 2) return 'DATI INSUFFICIENTI';
+
+  const recentPrices = prices.map(p => Number(p.PricePerUnit));
+  const avg = recentPrices.reduce((sum, p) => sum + p, 0) / recentPrices.length;
+
+  const maxPrice = Math.max(...recentPrices);
+  const minPrice = Math.min(...recentPrices);
+
+  const thresholdBuy = avg * 0.95;
+  const thresholdSell = avg * 1.05;
+
+  if (currentPrice <= thresholdBuy) {
+    const bestSellPrice = maxPrice;
+    const bestSellTime = prices.find(p => Number(p.PricePerUnit) === bestSellPrice)?.timestamp;
+    return `ACQUISTA ora. Rivendi quando il prezzo arriva a ${bestSellPrice} (es. ${bestSellTime})`;
+  }
+
+  if (currentPrice >= thresholdSell) {
+    return `VENDI ORA. Prezzo superiore alla media (${avg.toFixed(2)})`;
+  }
+
+  return 'ASPETTA. Prezzo nella media, nessuna opportunità chiara.';
+}
 
   //calcolo con media mobile
 

@@ -238,7 +238,7 @@ let previousMessageId = null;
   setInterval(() => {
     getLatestItemsAndSend();
     analyzeAndSendActions();
-  }, 10000); // 1 ora
+  }, 1000000); // 1 ora
 
 
 //ALGORITMI DI CALCOLO DEL PREZZO

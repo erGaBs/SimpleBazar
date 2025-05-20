@@ -1,5 +1,5 @@
-<div class="title">PAGINA DI DETTAGLIO DELL'ITEM CON ID: {{id}}</div> <br>
-<div class="container">
+
+<div class="container itemspacing">
 <div class="graph">
     <p-chart type="line" [data]="data" [options]="options"></p-chart>
 </div>
@@ -8,7 +8,8 @@
    <div> Current Price:  {{ items[items.length-1].PricePerUnit }}</div> <br>
    <div> Highest Price:  {{ highestPrice }}</div> <br>
    <div> Lowest Price:  {{ lowestPrice }}</div> <br>
-   <div> Final decision:  BUY NOW</div> <br>
-   <button (click)="calcolaEsito()"> CALCULATE</button>
+   <div> Final decision:</div> <br>
+   <div>{{ esito }}</div> <br>
+   <p-button (click)="calcolaEsito()"> RELOAD</p-button>
 </div>
 </div>
