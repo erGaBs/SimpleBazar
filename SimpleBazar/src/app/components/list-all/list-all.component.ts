@@ -69,4 +69,8 @@ export class ListAllComponent {
   
     return "WAIT FOR A BETTER PRICE";
   }
+
+  refreshData(){
+    this.ngOnInit()
+  }
 }

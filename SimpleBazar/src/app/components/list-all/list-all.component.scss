@@ -24,3 +24,10 @@
     flex-direction: column;
     margin: 10px;
 }
+
+.container{
+    width: auto;
+    margin: auto;
+    display: flex;
+    flex-direction: row-reverse;
+}
