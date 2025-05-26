@@ -15,9 +15,9 @@ const db = require('./db');
 
 
 app.use(cors({
-  origin: 'https://ergabs.github.io/SimpleBazar', // or '*'
-  methods: 'GET,POST,PUT,DELETE',
-  credentials: true
+  origin: 'https://ergabs.github.io',  // Sì, senza il /SimpleBazar/
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  credentials: false // oppure true, se usi cookie/autenticazione
 }));
 
 
