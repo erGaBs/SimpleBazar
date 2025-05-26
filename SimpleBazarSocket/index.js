@@ -5,12 +5,20 @@ const io = require('socket.io-client');
 const sqlite3 = require('sqlite3').verbose();
 const app = express();
 const port = 3000;
+const cors = require('cors');
 
 const socket = io('wss://noshydra.com', {
   transports: ['websocket']
 });
 
 const db = require('./db');
+
+
+app.use(cors({
+  origin: 'https://ergabs.github.io/SimpleBazar', // or '*'
+  methods: 'GET,POST,PUT,DELETE',
+  credentials: true
+}));
 
 
 // Funzione per inviare la richiesta di ricerca delle piene
