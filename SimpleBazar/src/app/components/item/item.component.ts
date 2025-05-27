@@ -49,11 +49,21 @@ export class ItemComponent {
     }
   }
 
+  orderArrayByTimestamp(items: Item[]) {
+    return items.sort((a, b) => {
+    const dateA = new Date(a.timestamp).getTime();
+    const dateB = new Date(b.timestamp).getTime();
+    return dateA - dateB; // ascending: oldest first
+  });
+  }
+
   createGraph(){
     this.setGraphOptions()
+    this.items = this.orderArrayByTimestamp(this.items);
         const documentStyle = getComputedStyle(document.documentElement);
         let labels = this.items.map((item) => this.formatDateToggmm(item.timestamp));
         let data = this.items.map((item) => Number(item.PricePerUnit));
+        debugger;
         this.data = {
           labels: labels,
           datasets: [
