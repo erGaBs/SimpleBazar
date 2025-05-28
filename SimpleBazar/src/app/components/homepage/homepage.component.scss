@@ -1,4 +1,44 @@
-.container{
-    margin-top: 20px;
-    margin-bottom: 20px;
+.container {
+  padding: 2rem;
+  background-color: #0d0d0d; /* Quasi nero */
+  min-height: calc(100vh - 120px);
+  color: #e5e7eb; /* Gray-200 */
+}
+
+/* TabView dark styling override */
+::ng-deep .p-tabview {
+  background-color: transparent;
+  border: none;
+  color: inherit;
+}
+
+::ng-deep .p-tabview-nav {
+  background-color: #1a1a1a; /* Antracite */
+  border-radius: 10px;
+  border: 1px solid #2c2c2c;
+  overflow: hidden;
+}
+
+::ng-deep .p-tabview-nav li {
+  margin: 0;
+}
+
+::ng-deep .p-tabview-nav li .p-tabview-nav-link {
+  background: none;
+  color: #9ca3af; /* Gray-400 */
+  padding: 1rem 1.5rem;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+::ng-deep .p-tabview-nav li.p-highlight .p-tabview-nav-link {
+  background-color: #0ea5e9; /* Ciano-500 */
+  color: #ffffff;
+}
+
+::ng-deep .p-tabview-panel {
+  margin-top: 1.5rem;
+  padding: 1.5rem;
+  background-color: #1a1a1a;
+  border-radius: 10px;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
 }

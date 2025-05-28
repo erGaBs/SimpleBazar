@@ -97,7 +97,7 @@ import { VirtualScrollerModule } from 'primeng/virtualscroller';
 
 import { HttpClientModule } from '@angular/common/http';
 import { LoginComponent } from './components/login/login.component';
-
+import { FilterPipe } from './service/filter.pipe';
 
 @NgModule({
   declarations: [
@@ -110,6 +110,7 @@ import { LoginComponent } from './components/login/login.component';
     ListBuyComponent,
     ListSellComponent,
     LoginComponent,
+    FilterPipe
   ],
   imports: [
     BrowserModule,
