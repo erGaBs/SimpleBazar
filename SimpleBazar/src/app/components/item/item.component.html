@@ -1,24 +1,40 @@
+<div class="container-fluid py-5 px-3 px-md-5">
+    <div class="row g-5 align-items-start">
+        <!-- GRAFICO -->
+        <div class="col-12 col-md-6 d-flex justify-content-center">
+            <div class="beautiful-card chart-card w-100">
+                <p-chart type="line" [data]="data" [options]="options"></p-chart>
+            </div>
+        </div>
 
-<div class="container-fluid itemspacing">
-<div class="row">
-<div class="col-12 col-md-6 text-white d-flex justify-content-center">
-<div class="graph">
-    <p-chart type="line" [data]="data" [options]="options"></p-chart>
-</div>
-</div>
-<div class="col-12 col-md-6 text-white d-flex justify-content-center">
-<div class="info">
-   <div class="text-center"> <b>{{ items[0].Name }}</b></div> <br>
-   <div class="text-center"> Current Price:  {{ items[items.length-1].PricePerUnit }}</div> <br>
-   <div class="text-center"> Highest Price:  {{ highestPrice }}</div> <br>
-   <div class="text-center"> Lowest Price:  {{ lowestPrice }}</div> <br>
-   <div class="text-center"> Final decision:</div> <br>
-   <div class="text-center">{{ esito }}</div> <br>
-   <p-button (click)="ngOnInit()"> RELOAD</p-button>
-</div>
-</div>
-</div>
-<div class="row">
-    <div class="mt-3 text-white text-center">Last Extraction: {{ timestampUltimoItem | date:'dd/MM/yyyy, HH:mm:ss' }}  </div>
-</div>
+        <!-- INFO -->
+        <div class="col-12 col-md-6 d-flex justify-content-center">
+            <div class="beautiful-card info-card w-100 text-white">
+                <h3 class="text-center gradient-text mb-4">{{ items[0].Name }}</h3>
+                <div class="info-line"><span>💰 Current Price:</span><span>{{ items[items.length-1].PricePerUnit
+                        }}</span></div>
+                <div class="info-line"><span>📈 Highest Price:</span><span>{{ highestPrice }}</span></div>
+                <div class="info-line"><span>📉 Lowest Price:</span><span>{{ lowestPrice }}</span></div>
+                <div class="info-line mt-3"><span>🧠 Final Decision:</span></div>
+
+                <div class="text-center mt-3">
+                      <span class="badge" [ngClass]="getEsitoBadgeClass()">
+                        {{ esito }}
+                    </span>
+                </div>
+
+                <div class="text-center mt-4">
+                    <p-button icon="pi pi-refresh" label="Reload"
+                        class="p-button-rounded p-button-lg p-button-secondary" (click)="ngOnInit()"></p-button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- TIMESTAMP -->
+    <div class="row mt-5">
+        <div class="col-12 text-center text-muted small">
+            🕒 Last Extraction: {{ timestampUltimoItem | date:'dd/MM/yyyy, HH:mm:ss' }}
+        </div>
+    </div>
 </div>

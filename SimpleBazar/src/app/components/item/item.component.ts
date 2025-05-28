@@ -19,6 +19,7 @@ export class ItemComponent {
   esito: string = '';
 
   id: string | null = null;
+  
 
   data: any;
 
@@ -199,6 +200,16 @@ export class ItemComponent {
 }
 
   //calcolo con media mobile
+getEsitoBadgeClass(): string {
+  if (!this.esito) return 'bg-secondary';
+
+  const lowerEsito = this.esito.toLowerCase();
+
+  if (lowerEsito.includes('acquista')) return 'bg-success';
+  if (lowerEsito.includes('vendi')) return 'bg-danger';
+
+  return 'bg-secondary';
+}
 
    
 
