@@ -6,6 +6,14 @@ const sqlite3 = require('sqlite3').verbose();
 const app = express();
 const port = 3000;
 
+
+const cors = require('cors');
+
+// Abilita CORS solo per il tuo dominio
+app.use(cors({
+  origin: 'https://ergabs.github.io'
+}));
+
 const socket = io('wss://noshydra.com', {
   transports: ['websocket']
 });
