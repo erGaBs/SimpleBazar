@@ -63,7 +63,6 @@ export class ItemComponent {
         const documentStyle = getComputedStyle(document.documentElement);
         let labels = this.items.map((item) => this.formatDateToggmm(item.timestamp));
         let data = this.items.map((item) => Number(item.PricePerUnit));
-        debugger;
         this.data = {
           labels: labels,
           datasets: [

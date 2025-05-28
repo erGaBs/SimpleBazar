@@ -1,11 +1,41 @@
-<div *ngFor="let item of categorie" class="card">
-    <div class="card-body">
-        <img class="preview" [src]="'https://www.noshydra.com/static/images/items_icons/' + item.iconID + '.png'" alt="Item Icon" />
-        <div class="section"> {{ item.Name }}</div>
-        <div class="section">{{ item.status }}</div>
-        <div class="section">Actual Price: {{ item.PricePerUnit}}</div>
-        <p-button class="btngoto" (click)="goTo(item.iconID)" label="Go to details"></p-button>
+<div class="mx-auto" style="max-width: 80vw;">
+  <!-- qui dentro tutto il tuo contenuto -->
+  <div *ngFor="let item of categorie" class="mb-3">
+    <div class="card p-3 cardcolor">
+      <div class="d-flex flex-column flex-md-row align-items-center">
+        <!-- Immagine -->
+        <img
+          class="preview mb-3 mb-md-0"
+          [src]="'https://www.noshydra.com/static/images/items_icons/' + item.iconID + '.png'"
+          alt="Item Icon"
+          style="max-width: 100px; max-height: 100px;"
+        />
+
+        <!-- Testo -->
+        <div
+          class="d-flex flex-wrap justify-content-between flex-grow-1 ms-md-3 text-center text-md-start"
+          style="min-width: 0;"
+        >
+          <div class="section mx-2 fw-bold" style="min-width: 120px;">
+            {{ item.Name }}
+          </div>
+          <div class="section mx-2" style="min-width: 100px;">
+            {{ item.status }}
+          </div>
+          <div class="section mx-2" style="min-width: 150px;">
+            Actual Price: {{ item.PricePerUnit }}
+          </div>
+        </div>
+
+        <!-- Bottone -->
+        <p-button
+          class="btngoto mt-3 mt-md-0 ms-md-3"
+          (click)="goTo(item.iconID)"
+          label="Go to details"
+        ></p-button>
+      </div>
     </div>
+  </div>
 </div>
 
 <div class="container"> 

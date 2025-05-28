@@ -1,15 +1,21 @@
 
-<div class="container itemspacing">
+<div class="container-fluid itemspacing">
+<div class="row">
+<div class="col-12 col-md-6 text-white d-flex justify-content-center">
 <div class="graph">
     <p-chart type="line" [data]="data" [options]="options"></p-chart>
 </div>
+</div>
+<div class="col-12 col-md-6 text-white d-flex justify-content-center">
 <div class="info">
-   <div> <b>{{ items[0].Name }}</b></div> <br>
-   <div> Current Price:  {{ items[items.length-1].PricePerUnit }}</div> <br>
-   <div> Highest Price:  {{ highestPrice }}</div> <br>
-   <div> Lowest Price:  {{ lowestPrice }}</div> <br>
-   <div> Final decision:</div> <br>
-   <div>{{ esito }}</div> <br>
+   <div class="text-center"> <b>{{ items[0].Name }}</b></div> <br>
+   <div class="text-center"> Current Price:  {{ items[items.length-1].PricePerUnit }}</div> <br>
+   <div class="text-center"> Highest Price:  {{ highestPrice }}</div> <br>
+   <div class="text-center"> Lowest Price:  {{ lowestPrice }}</div> <br>
+   <div class="text-center"> Final decision:</div> <br>
+   <div class="text-center">{{ esito }}</div> <br>
    <p-button (click)="calcolaEsito()"> RELOAD</p-button>
+</div>
+</div>
 </div>
 </div>

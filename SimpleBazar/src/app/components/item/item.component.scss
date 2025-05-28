@@ -1,7 +1,6 @@
 .graph{
-    margin-left: 50px;
     margin-bottom: 50px;
-    width: 40%;
+    width: 100%;
     height: 50%;
 }
 
@@ -10,14 +9,13 @@
 }
 
 .info{
-    margin-top: 50px;
     font-size: 25px;
     display: flex;
     flex-direction: column;
     align-items: center;
-    margin-left: 50px;
     width: 50%;
     height: 100%;
+    color: white;
 }
 
 .title{
@@ -30,4 +28,5 @@
 
 .itemspacing{
     margin-top: 40px;
+    margin-bottom: 40px;
 }
