@@ -8,7 +8,7 @@ import { Observable } from 'rxjs';
 
 export class ItemsService {
 
- private apiUrl = 'http://ffpalu.ddns.net:8001/'; // Cambia con il tuo endpoint
+ private apiUrl = 'https://berlin-movies-disciplinary-draws.trycloudflare.com/'; // Cambia con il tuo endpoint
 
   constructor(private http: HttpClient) {}
 
