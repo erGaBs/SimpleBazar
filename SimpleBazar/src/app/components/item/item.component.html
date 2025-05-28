@@ -17,7 +17,7 @@
                 <div class="info-line"><span>📉 Lowest Price:</span><span>{{ lowestPrice }}</span></div>
                 <div class="info-line mt-3"><span>🧠 Final Decision:</span></div>
 
-                <div class="text-center mt-3">
+                <div class="text-center mt-1">
                       <span class="badge" [ngClass]="getEsitoBadgeClass()">
                         {{ esito }}
                     </span>
@@ -33,8 +33,8 @@
 
     <!-- TIMESTAMP -->
     <div class="row mt-5">
-        <div class="col-12 text-center text-muted small">
-            🕒 Last Extraction: {{ timestampUltimoItem | date:'dd/MM/yyyy, HH:mm:ss' }}
+        <div class="col-12 text-center text-muted small" style="color:white">
+            <h6 style="color:white">🕒 Last Extraction: {{ timestampUltimoItem | date:'dd/MM/yyyy, HH:mm:ss' }}</h6>
         </div>
     </div>
 </div>
