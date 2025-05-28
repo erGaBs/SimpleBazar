@@ -12,6 +12,8 @@ export class ItemComponent {
 
     highestPrice: string = '';
     lowestPrice: string = '';
+
+    lastExtractionTimestamp: string = '';
     
 
   esito: string = '';
@@ -60,6 +62,7 @@ export class ItemComponent {
   createGraph(){
     this.setGraphOptions()
     this.items = this.orderArrayByTimestamp(this.items);
+    this.lastExtractionTimestamp = this.items[this.items.length-1].timestamp
         const documentStyle = getComputedStyle(document.documentElement);
         let labels = this.items.map((item) => this.formatDateToggmm(item.timestamp));
         let data = this.items.map((item) => Number(item.PricePerUnit));
