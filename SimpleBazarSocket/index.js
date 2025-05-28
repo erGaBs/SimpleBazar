@@ -103,7 +103,7 @@ socket.on('results', (data) => {
     data.results.slice(0, 2).forEach(item => {
       insertStmt.run([
         item.SaleID,
-        item.vnum,
+        item.IconID,
         item.PricePerUnit,
         dateFormatted,
         item.Name
