@@ -149,6 +149,12 @@ export class ItemComponent {
       };
   }
 
+  get timestampUltimoItem(): Date {
+  const raw = new Date(this.items[this.items.length - 1].timestamp);
+  raw.setHours(raw.getHours() + 2);  // aggiungi 2 ore
+  return raw;
+}
+
 
   calculateHighestLowestPrice(){
     this.lowestPrice = this.items.reduce((min, curr) => 
