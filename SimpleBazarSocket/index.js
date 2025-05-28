@@ -5,7 +5,7 @@ const io = require('socket.io-client');
 const sqlite3 = require('sqlite3').verbose();
 const app = express();
 const port = 3000;
-
+const cron = require('node-cron');
 
 const cors = require('cors');
 
@@ -23,8 +23,33 @@ const db = require('./db');
 
 
 
+
+// La tua funzione
+function cleanDB() {
+ const query = `
+    DELETE FROM items
+    WHERE datetime(timestamp) < datetime('now', '-14 days')
+  `;
+
+  db.run(query, function(err) {
+    if (err) {
+      console.error('Errore durante l\'eliminazione:', err.message);
+    } else {
+      console.log(`Pulizia completata. ${this.changes} record eliminati.`);
+    }
+  });
+}
+
+// Scheduler: ogni giorno alle 8:00 AM
+cron.schedule('0 8 * * *', () => {
+  cleanDB();
+}, {
+  timezone: "Europe/Rome"  // imposta il fuso orario corretto
+});
+
+
 // Funzione per inviare la richiesta di ricerca delle piene
-function searchPiene() {
+async function searchPiene() {
   socket.emit('search', {
     lang: 'it',
     server: 'dragonveil',
@@ -40,7 +65,7 @@ function searchPiene() {
   });
 }
 
-function searchPiume() {
+async function searchPiume() {
   socket.emit('search', {
     lang: 'it',
     server: 'dragonveil',
@@ -56,7 +81,7 @@ function searchPiume() {
   });
 }
 
-function searchProfumi() {
+async function searchProfumi() {
   socket.emit('search', {
     lang: 'it',
     server: 'dragonveil',
@@ -72,21 +97,138 @@ function searchProfumi() {
   });
 }
 
+async function searchAncelle() {
+  socket.emit('search', {
+    lang: 'it',
+    server: 'dragonveil',
+    inputField: `Benedizione di Ancelloan`,
+    categoryDropdownIndex: 0,
+    subCategoryDropdownIndex: -1,
+    levelDropdownIndex: -1,
+    rarityLevelDropdownIndex: -1,
+    upgradeLevelDropdownIndex: -1,
+    sortByDropdownIndex: 0,
+    page: 1,
+    shellFilters: []
+  });
+}
+
+async function searchPerle() {
+  socket.emit('search', {
+    lang: 'it',
+    server: 'dragonveil',
+    inputField: `Perla Arcobaleno`,
+    categoryDropdownIndex: 0,
+    subCategoryDropdownIndex: -1,
+    levelDropdownIndex: -1,
+    rarityLevelDropdownIndex: -1,
+    upgradeLevelDropdownIndex: -1,
+    sortByDropdownIndex: 0,
+    page: 1,
+    shellFilters: []
+  });
+}
+
+async function searchFiori() {
+  socket.emit('search', {
+    lang: 'it',
+    server: 'dragonveil',
+    inputField: `Fiore di ghiaccio`,
+    categoryDropdownIndex: 0,
+    subCategoryDropdownIndex: -1,
+    levelDropdownIndex: -1,
+    rarityLevelDropdownIndex: -1,
+    upgradeLevelDropdownIndex: -1,
+    sortByDropdownIndex: 0,
+    page: 1,
+    shellFilters: []
+  });
+}
+
+async function searchTicket() {
+  socket.emit('search', {
+    lang: 'it',
+    server: 'dragonveil',
+    inputField: `Ticket per abilità del compagno (tutte)`,
+    categoryDropdownIndex: 0,
+    subCategoryDropdownIndex: -1,
+    levelDropdownIndex: -1,
+    rarityLevelDropdownIndex: -1,
+    upgradeLevelDropdownIndex: -1,
+    sortByDropdownIndex: 0,
+    page: 1,
+    shellFilters: []
+  });
+}
+
+async function searchCarrelli() {
+  socket.emit('search', {
+    lang: 'it',
+    server: 'dragonveil',
+    inputField: `Supporto per Carta speciale dorato`,
+    categoryDropdownIndex: 0,
+    subCategoryDropdownIndex: -1,
+    levelDropdownIndex: -1,
+    rarityLevelDropdownIndex: -1,
+    upgradeLevelDropdownIndex: -1,
+    sortByDropdownIndex: 0,
+    page: 1,
+    shellFilters: []
+  });
+}
+
 // Gestione della connessione
 socket.on('connect', () => {
   console.log('✅ Connesso al WebSocket');
-  // Avvia il ciclo di richieste
-  scheduleNextRequest();
+   // Avvia il ciclo di richieste
+  // scheduleNextRequest();
 });
 
 // Funzione per pianificare la prossima richiesta
-function scheduleNextRequest() {
-  setTimeout(() => {
-    searchPiume();
-    searchPiene();
-    searchProfumi();
-  }, 3600000); // 1 ora
+// function scheduleNextRequest() {
+//   setTimeout(() => {
+//     searchPiume();
+//     searchPiene();
+//     searchProfumi();
+//     searchAncelle();
+//     searchPerle();
+//     searchFiori();
+//     searchTicket();
+//     searchCarrelli();
+//   }, 60000); // 1 ora
+// }
+
+const richieste = [
+  searchPiene,
+  searchPiume,
+  searchProfumi,
+  searchAncelle,
+  searchPerle,
+  searchFiori,
+  searchTicket,
+  searchCarrelli
+];
+
+function eseguiBatchRichieste() {
+  richieste.forEach((funzioneRichiesta, i) => {
+    setTimeout(async () => {
+      try {
+        // console.log(`▶️ Eseguo richiesta ${i + 1} alle ${new Date().toLocaleTimeString('it-IT')}`);
+        await funzioneRichiesta();
+      } catch (err) {
+        // console.error(`❌ Errore richiesta ${i + 1}:`, err.message);
+      }
+    }, i * 60 * 1000); // i minuti di attesa tra una richiesta e l'altra
+  });
 }
+
+// Ogni 10 minuti, parte un nuovo batch di 7 richieste
+cron.schedule('*/10 * * * *', () => {
+  // console.log(`\n🚀 Inizio nuovo batch alle ${new Date().toLocaleTimeString('it-IT')}`);
+  eseguiBatchRichieste();
+}, {
+  timezone: 'Europe/Rome'
+});
 
 //dateformatter
 function toLocalISOString(date) {
@@ -119,13 +261,13 @@ socket.on('results', (data) => {
     });
 
     insertStmt.finalize();
-    console.log(`✅ Inseriti ${Math.min(data.results.length, 5)} record nel database.`);
+    // console.log(`✅ Inseriti ${Math.min(data.results.length, 5)} record nel database.`);
   } else {
     console.warn('⚠️ Dati ricevuti non validi:', data);
   }
 
   // Pianifica la prossima richiesta solo dopo aver elaborato i dati correnti
-  scheduleNextRequest();
+  // scheduleNextRequest();
 });
 
 
@@ -170,194 +312,3 @@ app.listen(port, () => {
   console.log(`Server in ascolto su http://localhost:${port}`);
 });
 
-/////////////////////////////////////////           DISCORD             /////////////////////////////////////////////
-
-let lastMessageId = null; // Variabile per memorizzare l'ID dell'ultimo messaggio inviato
-const ora = new Date().toLocaleString('it-IT');
-
-function toLocalISOString(date) {
-  const pad = (n) => n.toString().padStart(2, '0');
-  return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}T${pad(date.getHours())}:${pad(date.getMinutes())}:${pad(date.getSeconds())}`;
-}
-
-async function getLatestItemsAndSend() {
-  const query = `
-    WITH ranked_items AS (
-      SELECT *,
-             ROW_NUMBER() OVER (PARTITION BY iconID ORDER BY timestamp DESC) AS rn
-      FROM items
-    )
-    SELECT ID, iconID, PricePerUnit, timestamp, Name
-    FROM ranked_items
-    WHERE rn = 1;
-  `;
-
-  db.all(query, [], async (err, rows) => {
-    if (err) {
-      console.error('Errore nella query:', err);
-      return;
-    }
-
-    if (rows.length === 0) {
-      console.log('Nessun dato trovato.');
-      return;
-    }
-
-    const now = new Date();
-    const timestamp = toLocalISOString(now);
-    const messages = rows.map(item =>
-      `🧾 **${item.Name}** (iconID: ${item.iconID})\n💰 Prezzo: ${item.PricePerUnit} 🕒 ${item.timestamp}\n`
-    );
-
-    const messageChunks = [];
-    let currentChunk = '';
-    for (const msg of messages) {
-      if ((currentChunk + '\n' + msg).length > 1900) {
-        messageChunks.push(currentChunk);
-        currentChunk = msg;
-      } else {
-        currentChunk += '\n' + msg;
-      }
-    }
-    if (currentChunk) messageChunks.push(currentChunk);
-
-    const webhookUrl = 'https://discord.com/api/webhooks/1374087262639362058/xUWfIIWUsyqf8D_pCAzo8ksUmCKXMRU_nstatAihGKEgPyOitLEORqJpmMUi0WOujS6v';
-
-    try {
-      // Cancella il messaggio precedente se esiste
-      if (lastMessageId) {
-        await axios.delete(`${webhookUrl}/messages/${lastMessageId}`);
-        console.log('✅ Messaggio precedente cancellato.');
-      }
-
-      // Invia il nuovo messaggio e salva il suo ID
-      const response = await axios.post(`${webhookUrl}?wait=true`, {
-        content: `📦 **Aggiornamento Prezzi - ${ora}**\n\n${messageChunks.join('\n')}`
-      });
-
-      lastMessageId = response.data.id;
-      console.log(`✅ Inviati ${rows.length} record su Discord.`);
-    } catch (error) {
-      console.error('Errore durante l\'invio o la cancellazione del messaggio su Discord:', error);
-    }
-  });
-}
-
-let previousMessageId = null;
-
-  setInterval(() => {
-    getLatestItemsAndSend();
-    analyzeAndSendActions();
-  }, 1000000); // 1 ora
-
-
-//ALGORITMI DI CALCOLO DEL PREZZO
-
-const DISCORD_WEBHOOK_URL2 = 'https://discord.com/api/webhooks/1374101631762698440/q6O7rF2STZTIxaC76nz2S_KY-QafllvuiPksLBSgwkjHMgc9S0lm3CwLCsKV8XVrxz-J';
-const MARGINE_DESIDERATO2 = 0.05; // 5%
-
-function toLocalISOString(date) {
-  const pad = (n) => n.toString().padStart(2, '0');
-  return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}T${pad(date.getHours())}:${pad(date.getMinutes())}:${pad(date.getSeconds())}`;
-}
-
-function getAction(prices, currentPrice) {
-  if (prices.length < 2) return 'DATI INSUFFICIENTI';
-
-  const recentPrices = prices.map(p => Number(p.PricePerUnit));
-  const avg = recentPrices.reduce((sum, p) => sum + p, 0) / recentPrices.length;
-
-  const maxPrice = Math.max(...recentPrices);
-  const minPrice = Math.min(...recentPrices);
-
-  const thresholdBuy = avg * (1 - MARGINE_DESIDERATO2);
-  const thresholdSell = avg * (1 + MARGINE_DESIDERATO2);
-
-  if (currentPrice <= thresholdBuy) {
-    const bestSellPrice = maxPrice;
-    const bestSellObj = prices.find(p => Number(p.PricePerUnit) === bestSellPrice);
-    const bestSellTime = bestSellObj ? bestSellObj.timestamp : 'momento sconosciuto';
-
-    return `ACQUISTA ora. Rivendi quando il prezzo arriva a ${bestSellPrice} (es. ${bestSellTime})`;
-  }
-
-  if (currentPrice >= thresholdSell) {
-    return `VENDI ORA. Prezzo superiore alla media (${avg.toFixed(2)})`;
-  }
-
-  return 'ASPETTA. Prezzo nella media, nessuna opportunità chiara.';
-}
-
-function analyzeAndSendActions() {
-  const query = `
-    SELECT iconID, Name, PricePerUnit, timestamp
-    FROM items
-    ORDER BY iconID, timestamp DESC
-  `;
-
-  db.all(query, [], async (err, rows) => {
-    if (err) {
-      console.error('Errore nella query:', err);
-      return;
-    }
-
-    if (rows.length === 0) {
-      console.log('Nessun dato trovato.');
-      return;
-    }
-
-    // Raggruppa i dati per iconID
-    const groupedData = {};
-    rows.forEach(row => {
-      if (!groupedData[row.iconID]) {
-        groupedData[row.iconID] = [];
-      }
-      groupedData[row.iconID].push(row);
-    });
-
-    const ora = new Date().toLocaleString('it-IT');
-    let messaggio = `📊 **Analisi Azioni Consigliate - ${ora}**\n\n`;
-
-    for (const iconID in groupedData) {
-      const items = groupedData[iconID];
-      const currentItem = items[0]; // Ultimo prezzo
-      const action = getAction(items, currentItem.PricePerUnit);
-
-      messaggio += `🧾 **${currentItem.Name}** (iconID: ${iconID})\n`;
-      messaggio += `💰 Prezzo Attuale: €${currentItem.PricePerUnit}\n`;
-      messaggio += `🔍 Azione: ${action}\n\n`;
-    }
-
-    try {
-      // Se esiste un messaggio precedente, cancellalo
-      if (previousMessageId) {
-        const deleteUrl = `${DISCORD_WEBHOOK_URL2}/messages/${previousMessageId}`;
-        const deleteResponse = await fetch(deleteUrl, { method: 'DELETE' });
-
-        if (!deleteResponse.ok) {
-          console.warn(`⚠️ Impossibile cancellare il messaggio precedente (ID: ${previousMessageId}).`);
-        } else {
-          console.log(`✅ Messaggio precedente (ID: ${previousMessageId}) cancellato con successo.`);
-        }
-      }
-
-      // Invia il nuovo messaggio e ottieni l'ID
-      const response = await fetch(`${DISCORD_WEBHOOK_URL2}?wait=true`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ content: messaggio })
-      });
-
-      if (!response.ok) {
-        console.error('Errore nell\'invio a Discord:', await response.text());
-        return;
-      }
-
-      const data = await response.json();
-      previousMessageId = data.id; // Memorizza l'ID del nuovo messaggio
-      console.log(`✅ Messaggio inviato su Discord. ID: ${previousMessageId}`);
-    } catch (error) {
-      console.error('Errore nell\'invio a Discord:', error);
-    }
-  });
-}
