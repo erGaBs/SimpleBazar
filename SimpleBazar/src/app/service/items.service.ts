@@ -8,7 +8,7 @@ import { Observable } from 'rxjs';
 
 export class ItemsService {
 
- private apiUrl = 'https://berlin-movies-disciplinary-draws.trycloudflare.com/'; // Cambia con il tuo endpoint
+ private apiUrl = 'https://dressing-assurance-pirates-errors.trycloudflare.com/'; // Cambia con il tuo endpoint
 
   constructor(private http: HttpClient) {}
 
