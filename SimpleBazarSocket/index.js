@@ -26,17 +26,40 @@ const db = require('./db');
 
 // La tua funzione
 function cleanDB() {
- const query = `
+
+   const allowedNames = [`Cristallo di Luna piena`, `Piuma d'angelo`, `Profumo`, `Benedizione di Ancelloan`, `Perla Arcobaleno`, `Fiore di ghiaccio`, `Ticket per abilità del compagno (tutte)`, `Supporto per Carta speciale dorato`, `Gemma del drago`, `Pergamena protettiva SP (alto)`]; // tua lista di nomi da conservare
+
+  // Query per eliminare record più vecchi di 14 giorni
+  const queryOldRecords = `
     DELETE FROM items
     WHERE datetime(timestamp) < datetime('now', '-14 days')
   `;
 
-  db.run(query, function(err) {
-    if (err) {
-      console.error('Errore durante l\'eliminazione:', err.message);
-    } else {
-      console.log(`Pulizia completata. ${this.changes} record eliminati.`);
-    }
+  // Query per eliminare record con Name non nella lista
+  const placeholders = allowedNames.map(() => '?').join(',');
+  const queryNameFilter = `
+    DELETE FROM items
+    WHERE Name NOT IN (${placeholders})
+  `;
+
+  db.serialize(() => {
+    // Prima eliminazione: record vecchi
+    db.run(queryOldRecords, function(err) {
+      if (err) {
+        console.error("Errore durante la pulizia dei record vecchi:", err.message);
+      } else {
+        console.log(`Eliminati ${this.changes} record più vecchi di 14 giorni.`);
+      }
+    });
+
+    // Seconda eliminazione: nomi non presenti nella whitelist
+    db.run(queryNameFilter, allowedNames, function(err) {
+      if (err) {
+        console.error("Errore durante la pulizia dei nomi:", err.message);
+      } else {
+        console.log(`Eliminati ${this.changes} record con Name non nella lista consentita.`);
+      }
+    });
   });
 }
 
