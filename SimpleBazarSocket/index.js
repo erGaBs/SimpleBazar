@@ -177,6 +177,38 @@ async function searchCarrelli() {
   });
 }
 
+async function searchGemme() {
+  socket.emit('search', {
+    lang: 'it',
+    server: 'dragonveil',
+    inputField: `Gemma del drago`,
+    categoryDropdownIndex: 0,
+    subCategoryDropdownIndex: -1,
+    levelDropdownIndex: -1,
+    rarityLevelDropdownIndex: -1,
+    upgradeLevelDropdownIndex: -1,
+    sortByDropdownIndex: 0,
+    page: 1,
+    shellFilters: []
+  });
+}
+
+async function searchUpSp2() {
+  socket.emit('search', {
+    lang: 'it',
+    server: 'dragonveil',
+    inputField: `Pergamena protettiva SP (alto)`,
+    categoryDropdownIndex: 0,
+    subCategoryDropdownIndex: -1,
+    levelDropdownIndex: -1,
+    rarityLevelDropdownIndex: -1,
+    upgradeLevelDropdownIndex: -1,
+    sortByDropdownIndex: 0,
+    page: 1,
+    shellFilters: []
+  });
+}
+
 // Gestione della connessione
 socket.on('connect', () => {
   console.log('✅ Connesso al WebSocket');
@@ -206,7 +238,9 @@ const richieste = [
   searchPerle,
   searchFiori,
   searchTicket,
-  searchCarrelli
+  searchCarrelli,
+  searchGemme,
+  searchUpSp2
 ];
 
 function eseguiBatchRichieste() {
